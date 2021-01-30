@@ -60,7 +60,8 @@ const onRequest = (request, response) => {
   //console.log(request.headers);
   //const parsedUrl = url.parse(request.url);
   //const baseUrl = 'http://localhost:3000'
-  const baseUrl = 'https://ajr6974-first-web-service.herokuapp.com';
+  //const baseUrl = 'https://ajr6974-first-web-service.herokuapp.com';
+  const baseUrl = 'http://' + request.headers.host + "/";
   const parsedUrl = new URL(request.url, baseUrl);
   const pathname = parsedUrl.pathname;
   console.log("parsedUrl=", parsedUrl);
