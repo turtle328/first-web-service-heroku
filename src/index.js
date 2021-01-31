@@ -1,10 +1,15 @@
-console.log("First web service starting up ...");
+const name = 'fred';
+const car = {
+  make: 'Ford',
+};
+
+// console.log('First web service starting up ...');
 
 // 1 - pull in the HTTP server module
 const http = require('http');
 
 // 2 - pull in URL and query modules (for URL parsing)
-const url = require('url');
+// const url = require('url');
 
 // 3 - locally this will be 3000, on Heroku it will be assigned
 const port = process.env.PORT || process.env.NODE_PORT || 3000;
@@ -37,56 +42,50 @@ const errorPage = `
   </body>
 </html>`;
 
-
 // 6 - this will return a random number no bigger than `max`, as a string
 // we will also doing our query parameter validation here
 const getRandomNumberJSON = (max = 2) => {
-  max = Number(max);
-  max = !max ? 1 : max;
-  max = max < 1 ? 1 : max;
-  const number = Math.random() * max;
+  let max2 = Number(max);
+  max2 = !max2 ? 1 : max2;
+  max2 = max2 < 1 ? 1 : max2;
+  const number = Math.random() * max2;
   const responseObj = {
     timestamp: new Date(),
-    number: number
+    number,
   };
   return JSON.stringify(responseObj);
-}
-
+};
 
 // 7 - this is the function that will be called every time a client request comes in
 // this time we will look at the `pathname`, and send back the appropriate page
 // note that in this course we'll be using arrow functions 100% of the time in our server-side code
 const onRequest = (request, response) => {
-  //console.log(request.headers);
-  //const parsedUrl = url.parse(request.url);
-  //const baseUrl = 'http://localhost:3000'
-  //const baseUrl = 'https://ajr6974-first-web-service.herokuapp.com';
-  const baseUrl = 'http://' + request.headers.host + "/";
+  // console.log(request.headers);
+  // const parsedUrl = url.parse(request.url);
+  // const baseUrl = 'http://localhost:3000'
+  // const baseUrl = 'https://ajr6974-first-web-service.herokuapp.com';
+  const baseUrl = `http://${request.headers.host}/`;
   const parsedUrl = new URL(request.url, baseUrl);
-  const pathname = parsedUrl.pathname;
-  console.log("parsedUrl=", parsedUrl);
-  console.log("pathname=", pathname);
+  const { pathname } = parsedUrl;
+  // console.log('parsedUrl=', parsedUrl);
+  // console.log('pathname=', pathname);
   const max = parsedUrl.searchParams.get('max');
-  console.log(max);
+  // console.log(max);
 
-  if (pathname == "/") {
+  if (pathname === '/') {
     response.writeHead(200, { 'Content-Type': 'text/html' });
     response.write(indexPage);
     response.end();
-  }
-  else if (pathname == "/random-number") {
+  } else if (pathname === '/random-number') {
     response.writeHead(200, { 'Content-Type': 'application/json' });
     response.write(getRandomNumberJSON(max));
     response.end();
-  }
-  else {
+  } else {
     response.writeHead(404, { 'Content-Type': 'text/html' });
     response.write(errorPage);
     response.end();
   }
-
 };
-
 
 // 8 - create the server, hook up the request handling function, and start listening on `port`
 http.createServer(onRequest).listen(port);
